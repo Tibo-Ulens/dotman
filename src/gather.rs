@@ -2,7 +2,7 @@
 
 use std::fs;
 
-use ansi_term::Colour::Blue;
+use ansi_term::Colour::{Blue, Cyan};
 use anyhow::{Context, Error};
 
 use super::Config;
@@ -38,7 +38,7 @@ pub fn gather(cfg: &Config) -> Result<(), Error> {
 		for file in files {
 			let destination = category_path.join(file.file_name().unwrap());
 
-			println!("    {} -> {}", file.display(), destination.display());
+			println!("   {} {} -> {}", Cyan.bold().paint("::"), file.display(), destination.display());
 
 			fs::copy(file, &destination).with_context(|| {
 				format!("Could not copy {} to {}", file.display(), destination.display())
