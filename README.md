@@ -54,24 +54,3 @@ to restore all dotfiles from their respective `.old` files.
 Any categories specified after the `--exclude` option will not be restored.\
 If the `--only` argument is given only the specified categories will be restored,
 if a specified category is not listed in the config file an error will be returned.
-
-### Editing the configuration
-
-Use `dotman add <category> <path/to/file>` to add a dotfile to a given category,
-if the category does not exist it will be created.
-
-Use `dotman remove { <path/to/file> | <category> }` to remove either a specific dotfile
-or an entire category from the config. Does nothing if the file/category aren't in the config.
-
-Use `dotman destination <path/to/dotfile/destination/directory>` to set the directory into which
-dotfiles will be gathered. Will throw an error if the directory doesn't exist
-
-## Hooks
-
-Dotman can execute user-specified commands called 'hooks' before or after either gathering or scattering.
-These hooks are listed in `{config_dir}/hooks/` and take the following format:
-```txt
-Description = <description of the hook>
-When = [ PreGather | PostGather | PreScatter | PostScatter ]
-Exec = <command to execute>
-```
