@@ -10,7 +10,6 @@ use std::process;
 
 use ansi_term::Colour::Red;
 use anyhow::{Context, Error};
-use dotman;
 use dotman::Config;
 
 /// Neatly print out an error and then exit
@@ -75,6 +74,6 @@ fn main_() -> Result<(), Error> {
 
 fn main() {
 	if let Err(err) = main_() {
-		print_err_and_exit(err.into());
+		print_err_and_exit(err);
 	}
 }

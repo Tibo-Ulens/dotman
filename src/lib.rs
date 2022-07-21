@@ -27,7 +27,7 @@ impl Config {
 	#[inline(always)]
 	pub fn from_file() -> Result<Self, Error> {
 		let config_home = env::var("XDG_CONFIG_HOME")
-			.unwrap_or(env::var("HOME").expect("HOME environment variable should be set"));
+			.unwrap_or_else(|_| env::var("HOME").expect("HOME environment variable should be set"));
 
 		let config_path = Path::new(&config_home).join("dotman").join("config.toml");
 

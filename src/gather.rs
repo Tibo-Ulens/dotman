@@ -23,29 +23,25 @@ pub fn gather(cfg: &Config) -> Result<(), Error> {
 		// Clear out the directory in case the files in a category changed
 		if category_path.exists() {
 			fs::remove_dir_all(&category_path).with_context(|| {
-				format!("Could not clear directory {}", category_path.display().to_string())
+				format!("Could not clear directory {}", category_path.display())
 			})?;
 
 			fs::create_dir(&category_path).with_context(|| {
-				format!("Could not create directory {}", category_path.display().to_string())
+				format!("Could not create directory {}", category_path.display())
 			})?;
 		} else {
 			fs::create_dir_all(&category_path).with_context(|| {
-				format!("Could not create directory {}", category_path.display().to_string())
+				format!("Could not create directory {}", category_path.display())
 			})?;
 		}
 
 		for file in files {
 			let destination = category_path.join(file.file_name().unwrap());
 
-			println!("    {} -> {}", file.display().to_string(), destination.display().to_string());
+			println!("    {} -> {}", file.display(), destination.display());
 
 			fs::copy(file, &destination).with_context(|| {
-				format!(
-					"Could not copy {} to {}",
-					file.display().to_string(),
-					destination.display().to_string(),
-				)
+				format!("Could not copy {} to {}", file.display(), destination.display(),)
 			})?;
 		}
 	}
