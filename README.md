@@ -37,7 +37,7 @@ if a specified category is not listed in the config file an error will be return
 ### Installing dotfiles
 
 Use `dotman scatter [ -e/--exclude category... ] [ -o/--only category... ]`
-to move all configured dotfiles from the collection directory ino their final location.
+to move all configured dotfiles from the collection directory into their final location.
 
 This command will also create a backup of any replaced dotfiles by renaming the file to
 `<dotfile>.old`, these can then later be restored using `dotman restore`.
