@@ -2,20 +2,20 @@
 
 use std::fs;
 
-use ansi_term::Colour::{Blue, Cyan};
+use ansi_term::Colour::{Cyan, Green};
 use anyhow::{Context, Error};
 
 use super::Config;
 
 /// Gather all dotfiles in the config into the destination directory
 pub fn gather(cfg: &Config) -> Result<(), Error> {
-	println!("Gathering dotfiles to {}", Blue.bold().paint(cfg.destination.display().to_string()));
+	println!("Gathering dotfiles to {}", Green.bold().paint(cfg.destination.display().to_string()));
 
 	for (category, files) in &cfg.dotfiles {
 		println!(
 			"\n{} Gathering dotfiles for {}",
-			Blue.bold().paint("::"),
-			Blue.bold().paint(category),
+			Green.bold().paint(">>"),
+			Green.bold().paint(category),
 		);
 
 		let category_path = cfg.destination.join(category);
@@ -38,7 +38,12 @@ pub fn gather(cfg: &Config) -> Result<(), Error> {
 		for file in files {
 			let destination = category_path.join(file.file_name().unwrap());
 
-			println!("   {} {} -> {}", Cyan.bold().paint("::"), file.display(), destination.display());
+			println!(
+				"   {} {} -> {}",
+				Cyan.bold().paint(">>"),
+				file.display(),
+				destination.display()
+			);
 
 			fs::copy(file, &destination).with_context(|| {
 				format!("Could not copy {} to {}", file.display(), destination.display())

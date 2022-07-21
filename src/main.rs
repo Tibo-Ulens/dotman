@@ -16,7 +16,7 @@ use dotman::Config;
 fn print_err_and_exit(err: Error) -> ! {
 	eprintln!("{} {}", Red.bold().paint("error:"), err);
 	err.chain().skip(1).for_each(|cause| {
-		eprintln!("  {} {}", Red.bold().paint("caused by:"), cause);
+		eprintln!("{} {}", Red.bold().paint(">> caused by:"), cause);
 	});
 
 	process::exit(1)
