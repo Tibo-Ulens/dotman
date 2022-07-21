@@ -9,7 +9,7 @@
 use std::process;
 
 use ansi_term::Colour::Red;
-use anyhow::Error;
+use anyhow::{Context, Error};
 use dotman;
 use dotman::Config;
 
@@ -30,36 +30,40 @@ fn main_() -> Result<(), Error> {
 
 	match matches.subcommand() {
 		Some((cmd, sub_matches)) if cmd == "gather" || cmd == "scatter" || cmd == "restore" => {
-			let excluded: Vec<String> = match sub_matches.values_of_t("excluded") {
-				Ok(val) => Ok(val),
+			let excluded: Option<Vec<String>> = match sub_matches.values_of_t("excluded") {
+				Ok(val) => Ok(Some(val)),
 				Err(err) => {
 					match err.kind() {
 						// No argument is not an error, just means the list
 						// is empty
-						clap::ErrorKind::ArgumentNotFound => Ok(vec![]),
+						clap::ErrorKind::ArgumentNotFound => Ok(None),
 						_ => Err(err),
 					}
 				},
 			}?;
 
-			let only: Vec<String> = match sub_matches.values_of_t("only") {
-				Ok(val) => Ok(val),
+			let only: Option<Vec<String>> = match sub_matches.values_of_t("only") {
+				Ok(val) => Ok(Some(val)),
 				Err(err) => {
 					match err.kind() {
 						// No argument is not an error, just means the list
 						// is empty
-						clap::ErrorKind::ArgumentNotFound => Ok(vec![]),
+						clap::ErrorKind::ArgumentNotFound => Ok(None),
 						_ => Err(err),
 					}
 				},
 			}?;
 
-			config.finalise_file_map(&only, &excluded);
+			if let Some(excluded) = excluded {
+				config.exclude(&excluded).with_context(|| "Failed to exclude category")?;
+			} else if let Some(only) = only {
+				config.only(&only).with_context(|| "Failed to include category")?;
+			}
 
 			match cmd {
 				"gather" => dotman::gather(&config)?,
-				// "scatter" => (),
-				// "restore" => (),
+				"scatter" => (),
+				"restore" => (),
 				_ => unreachable!("Prevented by match guard"),
 			}
 		},

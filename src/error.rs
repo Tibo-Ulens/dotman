@@ -20,4 +20,6 @@ pub enum Error {
 		#[from]
 		source: clap::Error,
 	},
+	#[error("Unknown category `{0}`")]
+	InvalidCategory(String),
 }

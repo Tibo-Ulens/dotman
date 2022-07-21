@@ -26,7 +26,8 @@ impl Config {
 	/// Read and parse the dotman config file from its default location
 	#[inline(always)]
 	pub fn from_file() -> Result<Self, Error> {
-		let config_home = env::var("XDG_CONFIG_HOME").unwrap_or(env::var("HOME").unwrap());
+		let config_home = env::var("XDG_CONFIG_HOME")
+			.unwrap_or(env::var("HOME").expect("HOME environment variable should be set"));
 
 		let config_path = Path::new(&config_home).join("dotman").join("config.toml");
 
@@ -42,36 +43,52 @@ impl Config {
 		Ok(config)
 	}
 
-	/// Handle exclude and only options
-	///
-	/// ## Arguments
-	///
-	/// - only_list: A list of the only categories to be processed, ignored if empty
-	/// - excluded_list: A list of categories to ignore, ignored if empty
+	/// Handle only option
 	#[inline(always)]
-	pub fn finalise_file_map(&mut self, only_list: &[String], excluded_list: &[String]) {
-		let mut to_be_removed = Vec::<String>::new();
+	pub fn only(&mut self, only_list: &[String]) -> Result<(), Error> {
+		let mut to_be_removed: Vec<String> = vec![];
 
-		if only_list.len() != 0 {
-			for (category, _) in self.dotfiles.iter() {
-				// If the only_list does not contain a category, it should be excluded
-				if !(only_list.contains(category)) {
-					to_be_removed.push(category.to_string());
-				}
+		let mut accepted = 0usize;
+		for category in self.dotfiles.keys() {
+			if only_list.contains(category) {
+				accepted += 1;
+			} else {
+				to_be_removed.push(category.to_string());
 			}
 		}
 
-		if excluded_list.len() != 0 {
-			for (category, _) in self.dotfiles.iter() {
-				// If the excluded_list contains a category, it should be excluded
-				if excluded_list.contains(category) {
-					to_be_removed.push(category.to_string());
-				}
-			}
+		if accepted < only_list.len() {
+			let invalid = only_list.iter().find(|c| !(self.dotfiles.contains_key(*c)));
+			return Err(Error::InvalidCategory(invalid.unwrap().to_string()));
 		}
 
 		for category in to_be_removed {
 			self.dotfiles.remove(&category);
 		}
+
+		Ok(())
+	}
+
+	/// Handle exclude option
+	#[inline(always)]
+	pub fn exclude(&mut self, exclude_list: &[String]) -> Result<(), Error> {
+		let mut to_be_removed: Vec<String> = vec![];
+
+		for category in self.dotfiles.keys() {
+			if exclude_list.contains(category) {
+				to_be_removed.push(category.to_string());
+			}
+		}
+
+		if to_be_removed.len() < exclude_list.len() {
+			let invalid = exclude_list.iter().find(|c| !(self.dotfiles.contains_key(*c)));
+			return Err(Error::InvalidCategory(invalid.unwrap().to_string()));
+		}
+
+		for category in to_be_removed {
+			self.dotfiles.remove(&category);
+		}
+
+		Ok(())
 	}
 }
