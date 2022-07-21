@@ -15,7 +15,7 @@ pub fn gather(cfg: &Config) -> Result<(), Error> {
 		println!(
 			"\n{} Gathering dotfiles for {}",
 			Blue.bold().paint("::"),
-			Blue.bold().paint(category)
+			Blue.bold().paint(category),
 		);
 
 		let category_path = cfg.destination.join(category);
@@ -41,7 +41,7 @@ pub fn gather(cfg: &Config) -> Result<(), Error> {
 			println!("    {} -> {}", file.display(), destination.display());
 
 			fs::copy(file, &destination).with_context(|| {
-				format!("Could not copy {} to {}", file.display(), destination.display(),)
+				format!("Could not copy {} to {}", file.display(), destination.display())
 			})?;
 		}
 	}
